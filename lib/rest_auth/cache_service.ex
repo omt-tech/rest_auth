@@ -1,7 +1,7 @@
 defmodule RestAuth.CacheService do
   use GenServer
 
-  @genserver_name Application.get_env(:rest_auth, :cache_service_name, RestAuth.TokenService)
+  @genserver_name Application.get_env(:rest_auth, :cache_service_name, RestAuth.CacheService)
   @ets_token_table :rest_auth_token_cache
   @ets_acl_table :rest_auth_acl_cache
 

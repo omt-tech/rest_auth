@@ -1,7 +1,7 @@
 defmodule RestAuth do
   use Application
   require Logger
-  
+
   @handler Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
   @moduledoc """
   `RestAuth` is a declarative ACL library for Phoenix. It functions by declaring a
@@ -33,6 +33,27 @@ defmodule RestAuth do
   logic on top of. After having implemented the behaviour `RestAuth` should rarely get
   in the way of anyhting.
 
+  
+  Default configuration values looks like:
+
+  ```
+  config :rest_auth,
+    handler: RestAuth.DummyhHandler,
+    token_service_name: RestAuth.CacheService,
+    anonymous_roles: [],
+    default_required_roles: [],
+    write_cookie: false
+  ```
+  
+  You need to at least set handler and the default roles.
+  ```
+  config :rest_auth,
+    handler: YourApp.RestAuthHandler,
+    token_service_name: YourOwnTokenServiceName, 
+    anonymous_roles: ["anonymous"],
+    default_required_roles: ["user"],
+    write_cookie: true
+  ```
   
   """
   

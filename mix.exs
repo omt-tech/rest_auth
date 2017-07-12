@@ -4,7 +4,7 @@ defmodule RestAuth.Mixfile do
   def project do
     [
       app: :rest_auth,
-      version: "0.9.0",
+      version: "0.9.2",
       elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -12,7 +12,8 @@ defmodule RestAuth.Mixfile do
       package: package(),
       deps: deps(),
       name: "RestAuth",
-      source_url: "https://github.com/omtt/rest_auth"
+      docs: [main: "RestAuth"],
+      source_url: "https://github.com/omttech/rest_auth"
     ]
   end
 
@@ -39,11 +40,11 @@ defmodule RestAuth.Mixfile do
   defp package do
     # These are the default files included in the package
     [
-      name: :postgrex,
-      files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+      name: :rest_auth,
+      files: ["lib", "mix.exs", "README*"],
       maintainers: ["Oliver Mulelid-Tynes"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/elixir-ecto/postgrex"}
+      links: %{"GitHub" => "https://github.com/omttech/rest_auth"}
     ]
   end
 end
