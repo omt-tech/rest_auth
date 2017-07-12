@@ -34,7 +34,9 @@ defmodule RestAuth.Authority do
   silently dropped.
   """
   def from_binary_key_map(map) do
-    Map.take(map, Map.keys(%RestAuth.Authority{}))
+    binary_keys = Map.keys(%RestAuth.Authority{})
+                  |> Enum.map(&Atom.to_string(&1))
+    Map.take(map, binary_keys)
     |> Enum.reduce(%RestAuth.Authority{}, fn {k,v}, acc ->
       Map.put(acc, String.to_existing_atom(k), v)
     end)
