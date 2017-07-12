@@ -5,7 +5,8 @@ defmodule RestAuth.Restrict do
 
   @default_required_roles Application.get_env(:rest_auth, :default_required_roles, [])
   @anonymous_roles Application.get_env(:rest_auth, :anonymous_roles, [])
-  @handler Application.get_env(:rest_auth, :handler, :handler_not_set)
+  @handler Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
+
   @moduledoc """
     `RestAuth.Restrict` is where the magic happens.
 
@@ -18,7 +19,7 @@ defmodule RestAuth.Restrict do
                         {:show, ["admin"]},
                         {:delete, ["admin"]}
                        ]
-    plug RestAuth.Restrict, [handler: YourApp.RestAuthHandler, roles: @rest_auth_roles]
+    plug RestAuth.Restrict @rest_auth_roles
     ```
 
     In this sample usage I have simply listed the roles in an attribute for readability.

@@ -3,13 +3,25 @@ defmodule RestAuth.Controller do
   import Phoenix.Controller, only: [json: 2]
   import Plug.Conn, only: [put_status: 2, halt: 1, put_resp_cookie: 3] 
 
-   @handler Application.get_env(:rest_auth, :handler, :handler_not_set)
+  @handler Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
+  @write_cookie Application.get_env(:rest_auth, :write_cookie, false)
+
+  @moduledoc """
+  Generic controller handling login and logout.
+  """
 
   @doc """
+  Call this function from your authentication controller.
+  It will write the token to a cookie if `:write_cookie` is set to 
+  `true` in the `:rest_auth` configuration. Defaults to false
 
+  ```
+  def login(conn, params) do
+    RestAuth.Controller.login(conn, params, write_cookie: true)
+  end
+  ```
   """
-  def login(conn, params, opts \\ []) do
-    write_cookie = Keyword.get(opts, :write_cookie, false)
+  def login(conn, params) do
     username = Map.get(params, "username", :error)
     raw_password = Map.get(params, "password", :error)
 
@@ -21,7 +33,7 @@ defmodule RestAuth.Controller do
     else
       case @handler.load_user_data(username, raw_password) do
         { :ok, payload } ->
-          conn = if write_cookie do
+          conn = if @write_cookie do
             token = payload["token"]
             put_resp_cookie(conn, "x-auth-token", token)#, secure: true)
           else
@@ -38,11 +50,23 @@ defmodule RestAuth.Controller do
     end
   end
 
-  def logout(conn, _params, opts \\ []) do
+  @doc """
+  Call this function from your authentication controller.
+  It will write the token to a cookie if `:write_cookie` is set to 
+  `true` in the `:rest_auth` configuration. Defaults to false
+
+  ```
+  def logout(conn, params) do
+    RestAuth.Controller.logout(conn, params)
+  end
+  ```
+  
+  """
+  def logout(conn, _params) do
     RestAuth.Utility.get_authority(conn)
     |> @handler.invalidate_token()
     conn = 
-      if Keyword.get(opts, :write_cookie, false) do
+      if @write_cookie do
         put_resp_cookie(conn, "x-auth-token", "deleted")
       else
         conn
