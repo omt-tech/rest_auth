@@ -1,11 +1,20 @@
 defmodule RestAuth.CacheService do
   use GenServer
 
-  @handler Application.get_env(:rest_auth, :handler, :handler_not_set)
   @genserver_name Application.get_env(:rest_auth, :cache_service_name, RestAuth.TokenService)
   @ets_token_table :rest_auth_token_cache
   @ets_acl_table :rest_auth_acl_cache
 
+  @moduledoc """
+  Generic caching service to be used by the user implemented handler module. 
+  Has API style meant to be used by the handler and most access should be routed through there. 
+  
+  The module uses `GenServer.multi_call/4` to flush caches and invalidations out to all
+  the nodes. Using this cache without nodes being connected will leave you unable to 
+  invalidate acl or kill off user sessions.
+
+  The cache is backed by ets tables and supports read concurrency.
+  """
 
   @doc """
   Looks up a user in the cache based on the authority.
@@ -25,7 +34,7 @@ defmodule RestAuth.CacheService do
   end
 
   @doc """
-  Synchronously puts user to the cache.
+  Synchronously puts a user in the cache.
   
   The call is syncronous to try to prevent multiple lookups / cache puts across the nodes.
   Returns
@@ -82,8 +91,8 @@ defmodule RestAuth.CacheService do
   Looks up if a user can access an item in the system. 
   Returns `:not_found` if there is nothing in the cache and a boolean result if there is.
   """ 
-  @spec can_user_access?(authority::RestAuth.Authority.t, category :: String.t, target_id :: any) :: :not_found | (true | false) 
-  def can_user_access?(auth = %RestAuth.Authority{user_id: user_id}, category, target_id)do
+  @spec can_user_access?(authority::RestAuth.Authority.t, category :: String.t, target_id :: any()) :: :not_found | (true | false) 
+  def can_user_access?(%RestAuth.Authority{user_id: user_id}, category, target_id)do
     ## check cache
     case :ets.match_object(@ets_acl_table, {user_id, category, target_id, :_ }) do
       [] ->
@@ -100,9 +109,8 @@ defmodule RestAuth.CacheService do
     * `{:ok, Integer.t}` If all nodes stored the access control with int being how many nodes it invalidated on.
     * `{:error, [Node.t]}` with a list of the bad nodes. Mainly to be used for logging purposes. 
   """
-  @spec set_user_access(authority::RestAuth.Authority.t, category :: String.t, target_id :: any, allowed :: boolean) :: :ok | {:error, [Node.t]}
-  def set_user_access(auth = %RestAuth.Authority{user_id: user_id}, category, target_id, allowed) do
-    allowed = @handler.lookup_acl(auth, category, target_id)
+  @spec set_user_access(authority::RestAuth.Authority.t, category :: String.t, target_id :: any(), allowed :: boolean) :: :ok | {:error, [Node.t]}
+  def set_user_access(%RestAuth.Authority{user_id: user_id}, category, target_id, allowed) do
     GenServer.multi_call([node() | Node.list()], @genserver_name, {:put_acl, user_id, category, target_id, allowed}, 5_000)
     |> case do
       {nodes, []} ->
@@ -116,7 +124,7 @@ defmodule RestAuth.CacheService do
   Invalidates all acls for a given `user_id` in a `RestAuth.Authority`.
   
   Returns
-    * `{:ok, Integer.t}` If all nodes invalidated the authority just fine with the int being how many nodes it invalidated on.
+    * `{:ok, Integer.t}` If all nodes invalidated the item acl just fine with the int being how many nodes it invalidated on.
     * `{:error, [Node.t]}` with a list of the bad nodes. Mainly to be used for logging purposes. 
   """
   @spec invalidate_user_acl(authority::RestAuth.Authority.t) :: :ok | {:error, [Node.t]}
@@ -139,7 +147,7 @@ defmodule RestAuth.CacheService do
     :ets.new(@ets_acl_table, [:named_table, :bag, :protected, read_concurrency: true])
     {:ok, %{}}
   end
-  
+
   @doc false
   def start_link() do
     GenServer.start_link(__MODULE__, %{}, [name: @genserver_name])

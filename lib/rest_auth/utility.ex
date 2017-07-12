@@ -33,7 +33,7 @@ defmodule RestAuth.Utility do
   end
 
   @doc """
-      Returns `true` if none of the `required_roles` are in users role, `false` if not
+  Returns `true` if none of the `required_roles` are in users role, `false` if not
   """
   def is_none_granted?(conn, required_roles) do
     case role_intersection(conn, required_roles) do
@@ -49,7 +49,6 @@ defmodule RestAuth.Utility do
   Checks if the current user on `conn` is logged in or not
   """
   def is_anonymous?(conn) do
-    Logger.debug "Checking if user is logged in or not"
     conn.private.rest_auth_authority.anonymous
   end
 

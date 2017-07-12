@@ -49,7 +49,7 @@ defmodule RestAuth.HandlerBehaviour do
   This function is often used for convenience if a user changes his username, name or other data that requires 
   the system to issue a new authority for an already known user.
   """
-  @callback load_user_data(user::any) :: {:ok, RestAuth.Authority.t}
+  @callback load_user_data(user::any()) :: {:ok, RestAuth.Authority.t}
 
   @doc """
   Similar to `load_user_data/1` but should get the user from the token. This function is called on every request
@@ -69,7 +69,7 @@ defmodule RestAuth.HandlerBehaviour do
   Remember to use  `invalidate_user_acl/2` to update the acl cache when granting or denying
   access to things.
   """
-  @callback can_access_item?(authority :: RestAuth.Authority.t, category :: String.t, target_id :: any) :: boolean
+  @callback can_access_item?(authority :: RestAuth.Authority.t, category :: String.t, target_id :: any()) :: boolean()
 
   @doc """
   Invalidates all user acl based off the `user_id` in the `RestAuth.Authority` struct. 
@@ -77,21 +77,21 @@ defmodule RestAuth.HandlerBehaviour do
   
   Can be regarded as a companion function
   """
-  @callback invalidate_user_acl(authority :: RestAuth.Authority.t) :: :ok | {:error, [Node.t]}
+  @callback invalidate_user_acl(authority :: RestAuth.Authority.t) :: :ok | {:error, reason :: String.t}
 
   @doc """
   Invalidates a token.
 
   Typically this invalidates the token in the cacheservice and deletes it from the database.
   """
-  @callback invalidate_token(authority :: RestAuth.Authority.t) :: :ok
+  @callback invalidate_token(authority :: RestAuth.Authority.t) :: :ok | {:error, reason :: String.t}
 
   @doc """
   Invalidates a user. This effectively logs out all active sessions across the application
 
   Typically this invalidates all the tokens in the cacheservice and deletes them from the database.
   """
-  @callback invalidate_user(authority :: RestAuth.Authority.t) :: :ok
+  @callback invalidate_user(authority :: RestAuth.Authority.t) :: :ok | {:error, reason :: String.t}
 
 
   
