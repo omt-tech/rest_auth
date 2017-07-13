@@ -32,15 +32,14 @@ defmodule RestAuth.Controller do
       |> halt
     else
       case @handler.load_user_data(username, raw_password) do
-        { :ok, payload } ->
+        { :ok, authority = %RestAuth.Authority{} } ->
           conn = if @write_cookie do
-            token = payload["token"]
-            put_resp_cookie(conn, "x-auth-token", token)#, secure: true)
+            put_resp_cookie(conn, "x-auth-token", authority.token)#, secure: true)
           else
             conn
           end
           conn
-          |> json(%{"data" => payload})
+          |> json(%{"data" => authority})
         { :error, reason } ->
           conn
           |> put_status(403)
@@ -62,7 +61,7 @@ defmodule RestAuth.Controller do
   ```
   
   """
-  def logout(conn, _params) do
+  def logout(conn) do
     RestAuth.Utility.get_authority(conn)
     |> @handler.invalidate_token()
     conn = 

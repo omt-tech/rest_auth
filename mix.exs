@@ -4,7 +4,7 @@ defmodule RestAuth.Mixfile do
   def project do
     [
       app: :rest_auth,
-      version: "0.9.3",
+      version: "0.9.4",
       elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
