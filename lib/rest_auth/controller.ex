@@ -56,7 +56,7 @@ defmodule RestAuth.Controller do
 
   ```
   def logout(conn, params) do
-    RestAuth.Controller.logout(conn, params)
+    RestAuth.Controller.logout(conn)
   end
   ```
   
