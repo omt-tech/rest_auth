@@ -114,12 +114,12 @@ defmodule RestAuth.Restrict do
             conn
             |> put_status(401)
             |> json(%{"error" => "not authenticated"})
-            halt(conn)
+            |> halt()
           false ->
             conn
             |> put_status(403)
             |> json(%{"error" => "you do not have access to this resource"})
-            halt(conn)
+            |> halt()
         end
       true ->
         conn
