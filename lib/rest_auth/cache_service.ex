@@ -97,7 +97,7 @@ defmodule RestAuth.CacheService do
     case :ets.match_object(@ets_acl_table, {user_id, category, target_id, :_ }) do
       [] ->
         :not_found
-      [{_, _, data}] ->
+      [{_user_id, _category, _target_id, data}] ->
         data
     end
   end
