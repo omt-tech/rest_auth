@@ -85,6 +85,10 @@ defmodule RestAuth.Restrict do
             Logger.debug "Got authority from token"
             conn
             |> put_private(:rest_auth_authority, authority)
+          {:client_outdated, authority} ->
+            conn
+            |> put_resp_header("x-auth-refresh-token", true)
+            |> put_private(:rest_auth_authority, authority)
           #Both error conditions will halt the plug pipeline
           {:error, reason}->
             #If an invalid token comes from cookie, set it to deleted

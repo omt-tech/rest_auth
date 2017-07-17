@@ -53,9 +53,12 @@ defmodule RestAuth.HandlerBehaviour do
 
   @doc """
   Similar to `load_user_data/1` but should get the user from the token. This function is called on every request
-  and should ideally be backed up by `RestAuth.TokenService` or any other caching strategy.
+  and should ideally be backed up by `RestAuth.TokenService` or any other caching strategy. If clientside data
+  is outdated, for example by the handler implementing a version field this function can return the authority in
+  a `{:client_outdated, RestAuth.Authority.t}` tuple. This will make the plug add "x-auth-refresh-token": "true"
+  header to the reply.
   """
-  @callback load_user_data_from_token(token::String.t) :: {:ok, RestAuth.Authority.t} | {:error, reason::String.t}
+  @callback load_user_data_from_token(token::String.t) :: {:ok, RestAuth.Authority.t} | {:client_outdated, RestAuth.Authority.t} | {:error, reason::String.t}
 
   
   @doc """
