@@ -5,7 +5,6 @@ defmodule RestAuth.Restrict do
 
   @default_required_roles Application.get_env(:rest_auth, :default_required_roles, [])
   @anonymous_roles Application.get_env(:rest_auth, :anonymous_roles, [])
-  @handler Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
 
   @moduledoc """
     `RestAuth.Restrict` is where the magic happens.
@@ -81,7 +80,7 @@ defmodule RestAuth.Restrict do
         |> put_private(:rest_auth_authority, %RestAuth.Authority{})
       token ->
         Logger.debug "Found token #{String.slice(token, 1..8)}...., attempting to load user from cache."
-        case @handler.load_user_data_from_token(token) do
+        case handler().load_user_data_from_token(token) do
           {:ok, authority} ->
             Logger.debug "Got authority from token"
             conn
@@ -124,6 +123,10 @@ defmodule RestAuth.Restrict do
       true ->
         conn
     end
+  end
+
+  defp handler() do
+    Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
   end
 
 end

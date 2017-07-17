@@ -3,7 +3,6 @@ defmodule RestAuth.Controller do
   import Phoenix.Controller, only: [json: 2]
   import Plug.Conn, only: [put_status: 2, halt: 1, put_resp_cookie: 3] 
 
-  @handler Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
   @write_cookie Application.get_env(:rest_auth, :write_cookie, false)
 
   @moduledoc """
@@ -31,7 +30,7 @@ defmodule RestAuth.Controller do
       |> json(%{"error" => "Username and/or password missing"})
       |> halt
     else
-      case @handler.load_user_data(username, raw_password) do
+      case handler().load_user_data(username, raw_password) do
         { :ok, authority = %RestAuth.Authority{} } ->
           conn = if @write_cookie do
             put_resp_cookie(conn, "x-auth-token", authority.token)#, secure: true)
@@ -62,8 +61,8 @@ defmodule RestAuth.Controller do
   
   """
   def logout(conn) do
-    RestAuth.Utility.get_authority(conn)
-    |> @handler.invalidate_token()
+    auth = RestAuth.Utility.get_authority(conn)
+    handler().invalidate_token(auth)
     conn = 
       if @write_cookie do
         put_resp_cookie(conn, "x-auth-token", "deleted")
@@ -76,5 +75,8 @@ defmodule RestAuth.Controller do
     |> halt
   end
 
+  defp handler() do
+    Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
+  end
 
 end

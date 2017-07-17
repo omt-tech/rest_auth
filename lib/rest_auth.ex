@@ -2,7 +2,6 @@ defmodule RestAuth do
   use Application
   require Logger
 
-  @handler Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler)
   @moduledoc """
   `RestAuth` is a declarative ACL library for Phoenix. It functions by declaring a
   controller level plug with a set of roles specified for the given action. It also
@@ -59,7 +58,7 @@ defmodule RestAuth do
   
   @doc false
   def start(_type, _args) do
-    if @handler == RestAuth.DummyHandler do
+    if Application.get_env(:rest_auth, :handler, RestAuth.DummyHandler) == RestAuth.DummyHandler do
       Logger.error "DUMMY RESTAUTH HANDLER IS SET, CREATE YOUR OWN BEFORE USING LIBRARY"
     end
     RestAuth.Supervisor.start_link
