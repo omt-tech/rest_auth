@@ -1,6 +1,7 @@
-defmodule RestAuth.HandlerBehaviour do
-@moduledoc """
-  This behavior is a requirement to use RestAUth.
+defmodule RestAuth.Handler do
+  @moduledoc """
+  This behavior is a requirement to use RestAuth.
+
   Please refer to the docs for each function to see how to implement the callbacks.
   """
 
@@ -96,6 +97,25 @@ defmodule RestAuth.HandlerBehaviour do
   """
   @callback invalidate_user(authority :: RestAuth.Authority.t) :: :ok | {:error, reason :: String.t}
 
+  @doc """
+  A configuration callback to determine, if mechanisms of `RestAuth` should
+  be writing into cookies.
 
-  
-end  
+  Default implementation would return `false`.
+  """
+  @callback write_cookie?() :: boolean
+
+  @doc """
+  A configuration callback to provide default required roles.
+
+  Simplest implementation is to return `[]`.
+  """
+  @callback default_required_roles() :: [String.t]
+
+  @doc """
+  A configuration collback to provide anonymous roles.
+
+  Simplest implementation is to return `[]`.
+  """
+  @callback anonymous_roles() :: [String.t]
+end
