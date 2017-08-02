@@ -13,6 +13,13 @@ defmodule RestAuth.Configure do
   end
 
   def call(conn, handler) do
-    Plug.Conn.put_private(conn, :rest_auth_handler, handler)
+    case conn.private do
+      %{rest_auth_handler: ^handler} ->
+        conn
+      %{rest_auth_handler: other} ->
+        raise ArgumentError, "conflicting `:rest_auth_handler` found: #{inspect other} while trying to configure #{inspect handler}"
+      _ ->
+        Plug.Conn.put_private(conn, :rest_auth_handler, handler)
+    end
   end
 end
