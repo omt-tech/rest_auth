@@ -11,7 +11,7 @@ defmodule RestAuth.DummyHandler do
   alias RestAuth.CacheService
 
   @moduledoc """
-  Sample Handler module showing intended flow and a sample set of 
+  Sample Handler module showing intended flow and a sample set of
   internal helpers. Will throw warnings if used in an actual app.
   Intention is to be inspiration for your own handler module.
   """
@@ -45,13 +45,13 @@ defmodule RestAuth.DummyHandler do
 
   def load_user_data(user) do
     metadata = %{
-      "name" => user.name, 
-      "company_id" => user.company_id, 
+      "name" => user.name,
+      "company_id" => user.company_id,
     }
 
     # We put a versioning in the token signature
     # to be able to do changes to our token strategy later.
-    token_data = %{user_id: user.id, version: 1} 
+    token_data = %{user_id: user.id, version: 1}
                  |> Poison.encode!
     token = Phoenix.Token.sign(RestAuth.FakeEndpoint, get_salt(), token_data)
 
@@ -104,7 +104,7 @@ defmodule RestAuth.DummyHandler do
     end
   end
 
-  
+
 
   #Defined with some default values to appease the behaviour gods
   def can_access_item?(%RestAuth.Authority{user_id: _user_id}, _category, _target_id), do: true
@@ -134,7 +134,11 @@ defmodule RestAuth.DummyHandler do
     end
   end
 
+  def write_cookie?(), do: false
 
+  def default_required_roles(), do: []
+
+  def anonymous_roles(), do: []
 
   ###########
   # HELPERS #
@@ -144,7 +148,7 @@ defmodule RestAuth.DummyHandler do
     "set_your_own_loooong_salt_here"
   end
 
-  
+
   defp check_password(encoded_password, raw_password) do
     #This should normally lean on Comeonin or similar libraries
     encoded_password == raw_password
@@ -163,7 +167,7 @@ defmodule RestAuth.DummyHandler do
     # dont end up with multiple identical tokens.
     authority
   end
-  
+
   defp load_token_from_db(authority) do
     # Just setting some metadata as a sample here.
     # This function should normally reconstruct the entire
@@ -178,5 +182,4 @@ defmodule RestAuth.DummyHandler do
   defp delete_all_tokens_from_db(%RestAuth.Authority{user_id: _user_id}) do
     #Function included as sample
   end
-
 end
