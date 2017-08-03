@@ -9,6 +9,10 @@ defmodule RestAuth.TestHandler do
     Process.get(:load_user_data_1).(user)
   end
 
+  def load_user_data_from_token(token) do
+    Process.get(:load_user_data_from_token).(token)
+  end
+
   def write_cookie?() do
     Process.get(:write_cookie?)
   end

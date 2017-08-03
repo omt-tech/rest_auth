@@ -38,74 +38,10 @@ defmodule RestAuth.Restrict do
     case Map.fetch(roles, action) do
       {:ok, action_roles} ->
         Logger.debug "Securing action #{action} against #{inspect action_roles}"
-        conn
-        |> consume_token(handler)
-        |> check_roles(action_roles)
+        check_roles(conn, action_roles)
       :error ->
         Logger.debug "Plug called without roles for #{action}, fetching from handler"
-        conn
-        |> consume_token(handler)
-        |> check_roles(default_required_roles(handler))
-    end
-  end
-
-  defp consume_token(conn, handler) do
-    case conn.private do
-      %{rest_auth_authority: %RestAuth.Authority{} = authority} ->
-        Logger.debug "Skipping authentication since #{inspect authority} was already provided in conn"
-        conn
-      _ ->
-        do_consume_token(conn, handler)
-    end
-  end
-
-  # Consumes and stores token, 401's if the token is invalid.
-  defp do_consume_token(conn, handler) do
-    case get_token(conn) do
-      {conn, token, _from_cookie?} when token in [nil, "deleted"] ->
-        anonymous_roles = anonymous_roles(handler)
-        Logger.debug "Header X-Auth-Token not found or deleted, storing anonymous user with roles #{inspect anonymous_roles}"
-        authority = %RestAuth.Authority{roles: anonymous_roles}
-        put_private(conn, :rest_auth_authority, authority)
-      {conn, token, from_cookie?} ->
-        Logger.debug "Found token #{String.slice(token, 1..8)}...., attempting to load user from cache."
-        case handler.load_user_data_from_token(token) do
-          {:ok, authority} ->
-            Logger.debug "Got authority from token"
-            conn
-            |> put_private(:rest_auth_authority, authority)
-          {:client_outdated, authority} ->
-            conn
-            |> put_resp_header("x-auth-refresh-token", true)
-            |> put_private(:rest_auth_authority, authority)
-          # All error conditions will halt the plug pipeline
-          {:error, reason} ->
-            conn
-            |> clean_cookie(from_cookie?)
-            |> put_status(401)
-            |> json(%{"error" => reason})
-            |> halt
-        end
-    end
-  end
-
-  # If an invalid token comes from cookie, set it to deleted
-  defp clean_cookie(conn, from_cookie?) do
-    if from_cookie? do
-      put_resp_cookie(conn, "x-auth-token", "deleted")
-    else
-      conn
-    end
-  end
-
-  defp get_token(conn) do
-    case get_req_header(conn, "x-auth-token") do
-      [] ->
-        Logger.debug "Trying to fetch token from cookie"
-        conn = fetch_cookies(conn)
-        {conn, Map.get(conn.cookies, "x-auth-token", nil), true}
-      [token | _] ->
-        {conn, token, false}
+        check_roles(conn, default_required_roles(handler))
     end
   end
 
@@ -134,14 +70,6 @@ defmodule RestAuth.Restrict do
   defp default_required_roles(handler) do
     if function_exported?(handler, :default_required_roles, 0) do
       handler.default_required_roles()
-    else
-      []
-    end
-  end
-
-  defp anonymous_roles(handler) do
-    if function_exported?(handler, :anonymous_roles, 0) do
-      handler.anonymous_roles()
     else
       []
     end
