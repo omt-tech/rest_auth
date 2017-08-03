@@ -73,7 +73,7 @@ defmodule RestAuth.Controller do
   def logout(conn) do
     handler = conn.private.rest_auth_handler
     auth = RestAuth.Utility.get_authority(conn)
-    handler.invalidate_token(auth)
+    :ok = handler.invalidate_token(auth)
     conn
     |> write_cookie("deleted", handler)
     |> put_status(200)

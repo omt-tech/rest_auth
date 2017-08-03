@@ -10,7 +10,7 @@ defmodule RestAuth.Test do
   """
   def authenticate_conn(conn, user) do
     handler = conn.private.rest_auth_handler
-    authority = handler.load_user_data(user)
+    {:ok, %RestAuth.Authority{} = authority} = handler.load_user_data(user)
     Plug.Conn.put_private(conn, :rest_auth_authority, authority)
   end
 

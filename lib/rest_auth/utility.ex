@@ -58,7 +58,12 @@ defmodule RestAuth.Utility do
   Gets current authority struct saved on `conn`
   """
   def get_authority(conn) do
-    conn.private.rest_auth_authority
+    case conn.private do
+      %{rest_auth_authority: %RestAuth.Authority{} = authority} ->
+        authority
+      _ ->
+        raise ArgumentError, "authority struct not found in the conn"
+    end
   end
 
   # Helper method that does a Set intersection between supplied roles and user roles.
