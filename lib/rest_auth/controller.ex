@@ -12,10 +12,28 @@ defmodule RestAuth.Controller do
 
   It will write the token to a cookie if handler is configured to write cookies.
 
+  The function will respond either successfully with data from the authority
+  struct returned by the `RestAuth.Handler.load_user_data/2` callback:
+
+      {
+        "data": {
+          "token": "g3QAAAACZAAEZGF0YW....udlCH1tpI8oPfIE+BsMcrXj2A=",
+          "user_id": 1,
+          "roles": ["user", "admin"],
+          "metadata":  {"name": "John Doe"}
+        }
+      }
+
+  Or with the returned error:
+
+      {
+        "error": <your string here>
+      }
+
   # Example
 
       def login(conn, params) do
-        RestAuth.Controller.login(conn, params, write_cookie: true)
+        RestAuth.Controller.login(conn, params)
       end
 
   """
