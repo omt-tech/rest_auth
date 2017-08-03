@@ -101,21 +101,24 @@ defmodule RestAuth.Handler do
   A configuration callback to determine, if mechanisms of `RestAuth` should
   be writing into cookies.
 
-  Default implementation would return `false`.
+  If not implemented, `false` is used.
   """
   @callback write_cookie?() :: boolean
+  @optional_callbacks [write_cookie?: 0]
 
   @doc """
   A configuration callback to provide default required roles.
 
-  Simplest implementation is to return `[]`.
+  If not implemented, `[]` is used.
   """
   @callback default_required_roles() :: [String.t]
+  @optional_callbacks [default_required_roles: 0]
 
   @doc """
   A configuration collback to provide anonymous roles.
 
-  Simplest implementation is to return `[]`.
+  If not implemented, `[]` is used.
   """
   @callback anonymous_roles() :: [String.t]
+  @optional_callbacks [anonymous_roles: 0]
 end

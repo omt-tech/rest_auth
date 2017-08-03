@@ -82,7 +82,7 @@ defmodule RestAuth.Controller do
   end
 
   defp write_cookie(conn, value, handler) do
-    if handler.write_cookie?() do
+    if function_exported(handler, :write_cookie?, 0) and handler.write_cookie?() do
       put_resp_cookie(conn, "x-auth-token", value)
     else
       conn

@@ -45,7 +45,7 @@ defmodule RestAuth.Restrict do
         Logger.debug "Plug called without roles for #{action}, fetching from handler"
         conn
         |> consume_token(handler)
-        |> check_roles(handler.default_required_roles())
+        |> check_roles(default_required_roles(handler))
     end
   end
 
@@ -63,7 +63,7 @@ defmodule RestAuth.Restrict do
   defp do_consume_token(conn, handler) do
     case get_token(conn) do
       {conn, token, _from_cookie?} when token in [nil, "deleted"] ->
-        anonymous_roles = handler.anonymous_roles()
+        anonymous_roles = anonymous_roles(handler)
         Logger.debug "Header X-Auth-Token not found or deleted, storing anonymous user with roles #{inspect anonymous_roles}"
         authority = %RestAuth.Authority{roles: anonymous_roles}
         put_private(conn, :rest_auth_authority, authority)
@@ -128,6 +128,22 @@ defmodule RestAuth.Restrict do
         |> put_status(403)
         |> json(%{"error" => "you do not have access to this resource"})
         |> halt()
+    end
+  end
+
+  defp default_required_roles(handler) do
+    if function_exported?(handler, :default_required_roles, 0) do
+      handler.default_required_roles()
+    else
+      []
+    end
+  end
+
+  defp anonymous_roles(handler) do
+    if function_exported?(handler, :anonymous_roles, 0) do
+      handler.anonymous_roles()
+    else
+      []
     end
   end
 end
