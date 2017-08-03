@@ -77,7 +77,8 @@ defmodule RestAuth.Handler do
 
   Can be regarded as a companion function
   """
-  @callback invalidate_user_acl(authority :: RestAuth.Authority.t) :: :ok | {:error, reason :: String.t}
+  @callback invalidate_user_acl(authority :: RestAuth.Authority.t) ::
+            :ok | {:error, reason :: String.t}
 
   @doc """
   Invalidates a token.
@@ -85,7 +86,8 @@ defmodule RestAuth.Handler do
   Typically this invalidates the token in the cacheservice and deletes any
   associated data from the database.
   """
-  @callback invalidate_token(authority :: RestAuth.Authority.t) :: :ok | {:error, reason :: String.t}
+  @callback invalidate_token(authority :: RestAuth.Authority.t) ::
+            :ok | {:error, reason :: String.t}
 
   @doc """
   Invalidates a user.
@@ -95,7 +97,8 @@ defmodule RestAuth.Handler do
   Typically this invalidates all the tokens in the cacheservice and deletes any
   associated data from the database.
   """
-  @callback invalidate_user(authority :: RestAuth.Authority.t) :: :ok | {:error, reason :: String.t}
+  @callback invalidate_user(authority :: RestAuth.Authority.t) ::
+            :ok | {:error, reason :: String.t}
 
   @doc """
   A configuration callback to determine, if mechanisms of `RestAuth` should
