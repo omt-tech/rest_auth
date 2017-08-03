@@ -5,9 +5,7 @@ defmodule RestAuth.AuthenticateTest do
   import Phoenix.ConnTest
 
   setup do
-    conn =
-      Plug.Test.conn(:get, "/")
-      |> RestAuth.Test.configure(handler: RestAuth.TestHandler)
+    conn = RestAuth.Test.configure(build_conn(), handler: RestAuth.TestHandler)
     {:ok, conn: conn}
   end
 

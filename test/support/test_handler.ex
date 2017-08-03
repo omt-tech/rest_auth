@@ -13,11 +13,15 @@ defmodule RestAuth.TestHandler do
     Process.get(:load_user_data_from_token).(token)
   end
 
+  def invalidate_token(token) do
+    Process.get(:invalidate_token).(token)
+  end
+
   def write_cookie?() do
     Process.get(:write_cookie?)
   end
 
-  def invalidate_token(token) do
-    Process.get(:invalidate_token).(token)
+  def default_required_roles() do
+    Process.get(:default_required_roles)
   end
 end

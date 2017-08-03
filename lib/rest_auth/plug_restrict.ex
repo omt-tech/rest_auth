@@ -35,6 +35,7 @@ defmodule RestAuth.Restrict do
   def call(conn, roles) do
     action = action_name(conn)
     handler = conn.private.rest_auth_handler
+    check_authority!(conn)
     case Map.fetch(roles, action) do
       {:ok, action_roles} ->
         Logger.debug "Securing action #{action} against #{inspect action_roles}"
@@ -72,6 +73,12 @@ defmodule RestAuth.Restrict do
       handler.default_required_roles()
     else
       []
+    end
+  end
+
+  defp check_authority!(conn) do
+    unless Map.has_key?(conn.private, :rest_auth_authority) do
+      raise ArgumentError, "use of the RestAuth.Authenticate plug is required before using the RestAuth.Restrict plug"
     end
   end
 end
