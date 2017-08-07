@@ -22,6 +22,10 @@ defmodule RestAuth.TestHandler do
   end
 
   def default_required_roles() do
-    Process.get(:default_required_roles)
+    Process.get(:default_required_roles) || []
+  end
+
+  def anonymous_roles() do
+    Process.get(:anonymous_roles) || []
   end
 end

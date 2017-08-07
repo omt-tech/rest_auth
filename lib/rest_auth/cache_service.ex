@@ -11,6 +11,9 @@ defmodule RestAuth.CacheService do
   `GenServer.multi_call/4`, while reads are dirty from the local ETS table.
   Using this cache without nodes being connected will leave you unable to
   invalidate acl or kill off user sessions.
+
+  The name of the server can be customized using the `:cache_service_name`
+  application environment configuration.
   """
   use GenServer
 
@@ -26,13 +29,13 @@ defmodule RestAuth.CacheService do
 
   Requires `:user_id` and `:token` fields to be set in the authority struct.
   """
-  @spec put_user(RestAuth.Authority.t) :: :not_found | {:ok, RestAuth.Authority.t}
+  @spec get_user(RestAuth.Authority.t) :: :not_found | {:ok, RestAuth.Authority.t}
   def get_user(%RestAuth.Authority{user_id: user_id, token: token})
       when not is_nil(user_id) and not is_nil(token) do
     case :ets.match(@ets_token_table, {user_id, token, :"$1"}) do
       [] ->
         :not_found
-      [data] ->
+      [[data]] ->
         {:ok, data}
     end
   end
@@ -47,7 +50,7 @@ defmodule RestAuth.CacheService do
     case :ets.match(@ets_acl_table, {user_id, category, target_id, :"$1"}) do
       [] ->
         :not_found
-      [data] ->
+      [[data]] ->
         data
     end
   end
@@ -100,24 +103,35 @@ defmodule RestAuth.CacheService do
   On success returns the count of nodes written to, on failure the list of nodes
   with failed writes.
   """
-  @spec set_user_access(RestAuth.Authority.t, category, target_id, boolean) ::
+  @spec put_user_access(RestAuth.Authority.t, category, target_id, boolean) ::
         {:ok, non_neg_integer} | {:error, [Node.t]}
-  def set_user_access(%RestAuth.Authority{user_id: user_id}, category, target_id, allowed?)
+  def put_user_access(%RestAuth.Authority{user_id: user_id}, category, target_id, allowed?)
       when not is_nil(user_id) and is_boolean(allowed?) do
     multi_call({:put_acl, user_id, category, target_id, allowed?})
   end
 
   @doc """
-  Invalidates all acls for a given `user_id` in a `RestAuth.Authority`.
+  Invalidates all access records for a given `user_id` in a `RestAuth.Authority`.
 
   On success returns the count of nodes written to, on failure the list of nodes
   with failed writes.
   """
-  @spec invalidate_user_acl(RestAuth.Authority.t) ::
+  @spec invalidate_user_access(RestAuth.Authority.t) ::
         {:ok, non_neg_integer} | {:error, [Node.t]}
-  def invalidate_user_acl(%RestAuth.Authority{user_id: user_id})
+  def invalidate_user_access(%RestAuth.Authority{user_id: user_id})
       when not is_nil(user_id) do
     multi_call({:delete_acl, user_id})
+  end
+
+  @doc """
+  Clears all the caches.
+
+  On success returns the count of nodes written to, on failure the list of nodes
+  with failed writes.
+  """
+  @spec clear() :: {:ok, non_neg_integer} | {:error, [Node.t]}
+  def clear() do
+    multi_call(:clear)
   end
 
   defp multi_call(msg) do
@@ -166,6 +180,12 @@ defmodule RestAuth.CacheService do
 
   def handle_call({:delete_acl, user_id}, _from, state) do
     :ets.match_delete(@ets_acl_table, {user_id, :_, :_, :_})
+    {:reply, :ok, state}
+  end
+
+  def handle_call(:clear, _from, state) do
+    :ets.delete_all_objects(@ets_token_table)
+    :ets.delete_all_objects(@ets_acl_table)
     {:reply, :ok, state}
   end
 end
