@@ -57,6 +57,8 @@ defmodule RestAuth.Handler do
   @doc """
   Verifies the given authority can access an item in the system.
 
+  The callback is not used by the library and is an advice of use of the library.
+
   Typically does a lookup for permissions in the caching layer first,
   then in the database if it is not found there.
 
@@ -67,10 +69,13 @@ defmodule RestAuth.Handler do
   granting or denying access to things.
   """
   @callback can_access_item?(RestAuth.Authority.t, category :: String.t, target_id :: any()) :: boolean()
+  @optional_callbacks [can_access_item?: 3]
 
   @doc """
   Invalidates all user acl based off the `user_id` in the `RestAuth.Authority`
   struct.
+
+  The callback is not used by the library and is an advice of use of the library.
 
   Typically used to clear the acl for a user after being granted access to
   something with intention of refreshing the acl data on subsequent requests.
@@ -79,6 +84,7 @@ defmodule RestAuth.Handler do
   """
   @callback invalidate_user_acl(authority :: RestAuth.Authority.t) ::
             :ok | {:error, reason :: String.t}
+  @optional_callbacks [invalidate_user_acl: 1]
 
   @doc """
   Invalidates a token.
@@ -92,6 +98,8 @@ defmodule RestAuth.Handler do
   @doc """
   Invalidates a user.
 
+  The callback is not used by the library and is an advice of use of the library.
+
   This effectively logs out all active sessions across the application
 
   Typically this invalidates all the tokens in the cacheservice and deletes any
@@ -99,6 +107,7 @@ defmodule RestAuth.Handler do
   """
   @callback invalidate_user(authority :: RestAuth.Authority.t) ::
             :ok | {:error, reason :: String.t}
+  @optional_callbacks [invalidate_user: 1]
 
   @doc """
   A configuration callback to determine, if mechanisms of `RestAuth` should
