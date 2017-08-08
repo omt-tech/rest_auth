@@ -4,7 +4,7 @@ defmodule RestAuth.Mixfile do
   def project do
     [
       app: :rest_auth,
-      version: "0.9.7",
+      version: "1.0.0",
       elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -43,7 +43,7 @@ defmodule RestAuth.Mixfile do
     [
       name: :rest_auth,
       files: ["lib", "mix.exs", "README*"],
-      maintainers: ["Oliver Mulelid-Tynes"],
+      maintainers: ["Oliver Mulelid-Tynes", "Michał Muskała"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/omttech/rest_auth"}
     ]
