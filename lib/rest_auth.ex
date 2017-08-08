@@ -1,13 +1,15 @@
 defmodule RestAuth do
   @moduledoc """
-  `RestAuth` is a declarative ACL library for Phoenix. It functions by declaring a
-  controller level plug with a set of roles specified for the given action. It also
-  provides a framework for doing per-item-ACL with ETS backed caching built in.
+  `RestAuth` is a declarative ACL library for Phoenix.
+
+  It functions by declaring a controller level plug with a set of roles specified
+  for the given action. It also provides a framework for doing per-item-ACL with
+  a naive distributed ETS backend caching built-in.
 
   To set up and use `RestAuth` you need to specify some configuration for sane
   defaults. All the configuration is provided using a plug:
 
-     plug RestAuth.Configure, handler: MyHandler
+      plug RestAuth.Configure, handler: MyHandler
 
   The only option accepted right now is the `:handler` module that implements
   the `RestAuth.Handler` behaviour. An example handler is provided in the
