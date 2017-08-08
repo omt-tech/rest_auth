@@ -1,12 +1,12 @@
 defmodule RestAuth.Authority do
-
   @moduledoc """
   An authority struct.
+
   Used to hold information about the current user/authority granted.
   """
 
   @typedoc """
-  Roles defaults to either [] or the specified anonymous roles in your config.
+  Roles defaults to an empty list.
   Anonymous defaults to `true`. Remember to set `anonymous: false` on successful creation
   of `RestAuth.Authority` in your handler!
 
@@ -21,9 +21,9 @@ defmodule RestAuth.Authority do
 
   @derive {Poison.Encoder, only: [:token, :user_id, :roles, :metadata]}
   defstruct [
-    :token, 
-    :user_id, 
-    {:roles, Application.get_env(:rest_auth, :anonymous_roles, [])},
+    :token,
+    :user_id,
+    {:roles, []},
     {:metadata, %{}},
     {:anonymous, true}
   ]
