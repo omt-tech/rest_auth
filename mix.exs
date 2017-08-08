@@ -1,10 +1,12 @@
 defmodule RestAuth.Mixfile do
   use Mix.Project
 
+  @version "1.0.0"
+
   def project do
     [
       app: :rest_auth,
-      version: "1.0.0",
+      version: @version,
       elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -13,8 +15,8 @@ defmodule RestAuth.Mixfile do
       package: package(),
       deps: deps(),
       name: "RestAuth",
-      docs: [main: "RestAuth"],
-      source_url: "https://github.com/omttech/rest_auth"
+      docs: [main: "RestAuth", source_ref: "v#{@version}",
+             source_url: "https://github.com/omttech/rest_auth"]
     ]
   end
 
