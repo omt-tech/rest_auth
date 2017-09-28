@@ -16,7 +16,7 @@ defmodule RestAuth.Mixfile do
       deps: deps(),
       name: "RestAuth",
       docs: [main: "RestAuth", source_ref: "v#{@version}",
-             source_url: "https://github.com/omttech/rest_auth"]
+             source_url: "https://github.com/omt-tech/rest_auth"]
     ]
   end
 
@@ -47,7 +47,7 @@ defmodule RestAuth.Mixfile do
       files: ["lib", "mix.exs", "README*"],
       maintainers: ["Oliver Mulelid-Tynes", "Michał Muskała"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/omttech/rest_auth"}
+      links: %{"GitHub" => "https://github.com/omt-tech/rest_auth"}
     ]
   end
 
