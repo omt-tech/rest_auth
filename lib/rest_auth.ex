@@ -18,7 +18,7 @@ defmodule RestAuth do
   You also need to set up an authentication controller of sorts that calls
   `RestAuth.Controller.login/3` and `RestAuth.Controller.logout/3` functions
 
-  A typical sample usage in a controller looks like so (pulled from `Restauth.Restrict` documentation):
+  A typical sample usage in a controller looks like so (pulled from `RestAuth.Restrict` documentation):
 
       @rest_auth_roles  [
         {:index, ["user"]},
@@ -33,9 +33,9 @@ defmodule RestAuth do
   user data from the database and caching the data using `RestAuth.CacheService`
   if caching is required.
 
-  This library aims to be a slightly oppinionated framework for you to build your
+  This library aims to be a slightly opinionated framework for you to build your
   own logic on top of. After having implemented the behaviour `RestAuth` should
-  rarely get in the way of anyhting.
+  rarely get in the way of anything.
   """
   use Application
 

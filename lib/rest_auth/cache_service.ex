@@ -2,7 +2,7 @@ defmodule RestAuth.CacheService do
   @moduledoc """
   Generic caching service to be used by the user implemented handler module.
 
-  Most functions from the handler, should use the cache service for best
+  Most functions from the handler should use the cache service for best
   performance and behaviour.
 
   The data is cached in ETS tables. The service expects a homogeneous
