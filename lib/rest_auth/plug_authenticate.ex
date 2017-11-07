@@ -2,7 +2,7 @@ defmodule RestAuth.Authenticate do
   @moduledoc """
   `RestAuth.Authenticate` is used to load user information into conn.
 
-  It will use the configured handler, to load the authority struct and
+  It will use the configured handler to load the authority struct and
   store it in the connection. The user data can be later accessed using
   functions from `RestAuth.Utility` module.
 
