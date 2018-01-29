@@ -19,7 +19,14 @@ defmodule RestAuth.Authority do
     anonymous: true | false
   }
 
-  @derive {Poison.Encoder, only: [:token, :user_id, :roles, :metadata]}
+  if Code.ensure_loaded?(Poison.Encoder) do
+    @derive {Poison.Encoder, only: [:token, :user_id, :roles, :metadata]}
+  end
+
+  if Code.ensure_loaded?(Jason.Encoder) do
+    @derive {Jason.Encoder, only: [:token, :user_id, :roles, :metadata]}
+  end
+
   defstruct [
     :token,
     :user_id,

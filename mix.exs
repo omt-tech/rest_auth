@@ -30,6 +30,8 @@ defmodule RestAuth.Mixfile do
   defp deps do
     [
       {:phoenix, ">= 1.2.0"},
+      {:poison, "~> 2.0 or ~> 3.0", optional: true},
+      {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.14", only: :dev},
     ]
   end
