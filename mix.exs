@@ -1,7 +1,7 @@
 defmodule RestAuth.Mixfile do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.1.0"
 
   def project do
     [
@@ -46,7 +46,6 @@ defmodule RestAuth.Mixfile do
     # These are the default files included in the package
     [
       name: :rest_auth,
-      files: ["lib", "mix.exs", "README*"],
       maintainers: ["Oliver Mulelid-Tynes", "Michał Muskała"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/omt-tech/rest_auth"}

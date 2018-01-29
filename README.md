@@ -1,8 +1,8 @@
 # RestAuth
 
-[![Build Status](https://api.travis-ci.org/omttech/rest_auth.svg?branch=master)](https://travis-ci.org/omttech/rest_auth)
+[![Build Status](https://api.travis-ci.org/omt-tech/rest_auth.svg?branch=master)](https://travis-ci.org/omt-tech/rest_auth)
 
-`RestAuth` is a declarative ACL library for Phoenix. 
+`RestAuth` is a declarative ACL library for Phoenix.
 
 ## Installation
 
@@ -57,7 +57,7 @@ rarely get in the way of anything.
 
 The project is used in production. That said there are couple things that
 remain to be done:
-  
+
   * Generators that make skeleton handler modules
   * Generators for token and user schemas for Ecto
   * Periodic reading from the database to flush the token cache for multi node deploys where the nodes are not connected
