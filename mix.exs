@@ -22,8 +22,8 @@ defmodule RestAuth.Mixfile do
 
   def application do
     [
-      mod: { RestAuth, [] },
-      applications: [:logger],
+      mod: {RestAuth, []},
+      extra_applications: [:logger],
     ]
   end
 
