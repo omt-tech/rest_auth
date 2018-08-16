@@ -11,11 +11,11 @@ defmodule RestAuth.Authenticate do
     plug RestAuth.Authenticate
 
   """
-
   require Logger
 
+  alias RestAuth.ErrorHandler
+
   import Plug.Conn
-  import Phoenix.Controller, only: [json: 2]
 
   def init(opts) do
     opts
@@ -39,6 +39,7 @@ defmodule RestAuth.Authenticate do
         Logger.debug "Header X-Auth-Token not found or deleted, storing anonymous user with roles #{inspect anonymous_roles}"
         authority = %RestAuth.Authority{roles: anonymous_roles}
         put_private(conn, :rest_auth_authority, authority)
+
       {conn, token, from_cookie?} ->
         Logger.debug "Found token #{String.slice(token, 1..8)}...., attempting to load user from cache."
         case handler.load_user_data_from_token(token) do
@@ -46,18 +47,19 @@ defmodule RestAuth.Authenticate do
             Logger.debug "Got authority from token"
             conn
             |> put_private(:rest_auth_authority, authority)
+
           {:client_outdated, authority} ->
             Logger.debug "Got authority from outdated token"
             conn
             |> put_token_refresh(from_cookie?)
             |> put_private(:rest_auth_authority, authority)
+
           # All error conditions will halt the plug pipeline
           {:error, reason} ->
-            conn
-            |> clean_cookie(from_cookie?)
-            |> put_status(401)
-            |> json(%{"error" => reason})
-            |> halt
+            error_handler = ErrorHandler.from_config_or(ErrorHandler.Default)
+
+            error_handler.cannot_authenticate(conn, reason, from_cookie?)
+            |> halt() # Ensure halted
         end
     end
   end
@@ -78,15 +80,6 @@ defmodule RestAuth.Authenticate do
       put_resp_cookie(conn, "x-auth-refresh-token", "true")
     else
       put_resp_header(conn, "x-auth-refresh-token", "true")
-    end
-  end
-
-  # If an invalid token comes from cookie, set it to deleted
-  defp clean_cookie(conn, from_cookie?) do
-    if from_cookie? do
-      put_resp_cookie(conn, "x-auth-token", "deleted")
-    else
-      conn
     end
   end
 

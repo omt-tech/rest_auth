@@ -19,7 +19,10 @@ defmodule RestAuth.Restrict do
 
   """
   require Logger
-  import Phoenix.Controller, only: [action_name: 1, json: 2]
+
+  alias RestAuth.ErrorHandler
+
+  import Phoenix.Controller, only: [action_name: 1]
   import Plug.Conn
 
   @doc """
@@ -55,16 +58,18 @@ defmodule RestAuth.Restrict do
     cond do
       RestAuth.Utility.is_any_granted?(conn, required_roles) ->
         conn
+
       RestAuth.Utility.is_anonymous?(conn) ->
-        conn
-        |> put_status(401)
-        |> json(%{"error" => "not authenticated"})
-        |> halt()
+        error_handler = ErrorHandler.from_config_or(ErrorHandler.Default)
+
+        error_handler.unauthenticated(conn)
+        |> halt() # Ensure halted
+
       true ->
-        conn
-        |> put_status(403)
-        |> json(%{"error" => "you do not have access to this resource"})
-        |> halt()
+        error_handler = ErrorHandler.from_config_or(ErrorHandler.Default)
+
+        error_handler.unauthorized(conn)
+        |> halt() # Ensure halted
     end
   end
 
