@@ -56,7 +56,7 @@ defmodule RestAuth.Authenticate do
 
           # All error conditions will halt the plug pipeline
           {:error, reason} ->
-            error_handler = ErrorHandler.from_config_or(ErrorHandler.Default)
+            error_handler = ErrorHandler.fetch!(conn)
 
             error_handler.cannot_authenticate(conn, reason, from_cookie?)
             |> halt() # Ensure halted

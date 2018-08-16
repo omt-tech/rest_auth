@@ -2,9 +2,11 @@ defmodule RestAuth.ErrorHandler do
   @moduledoc """
   Behaviour for providing overridable error handling for RestAuth plugs.
 
-  Set in config like:
-  ```elixir
-  config :rest_auth,
+  Configured with `RestAuth.Configure` like:
+
+  ```
+  plug RestAuth.Configure,
+    handler: YourHandler,
     error_handler: YourErrorHandler
   ```
   """
@@ -40,10 +42,13 @@ defmodule RestAuth.ErrorHandler do
   # Helpers
 
   @doc """
-  Returns the ErrorHandler set in config, or the provided default.
+  Returns the ErrorHandler from the conn, or raises.
   """
-  def from_config_or(default) do
-    Application.get_env(:rest_auth, :error_handler, default)
+  def fetch!(%Conn{} = conn) do
+    case Map.fetch(conn.private, :rest_auth_error_handler) do
+      {:ok, error_handler} -> error_handler
+      :error -> raise "Unable to fetch the error handler- has the `RestAuth.Configure` plug been used?"
+    end
   end
 
   @doc """

@@ -60,13 +60,13 @@ defmodule RestAuth.Restrict do
         conn
 
       RestAuth.Utility.is_anonymous?(conn) ->
-        error_handler = ErrorHandler.from_config_or(ErrorHandler.Default)
+        error_handler = ErrorHandler.fetch!(conn)
 
         error_handler.unauthenticated(conn)
         |> halt() # Ensure halted
 
       true ->
-        error_handler = ErrorHandler.from_config_or(ErrorHandler.Default)
+        error_handler = ErrorHandler.fetch!(conn)
 
         error_handler.unauthorized(conn)
         |> halt() # Ensure halted
