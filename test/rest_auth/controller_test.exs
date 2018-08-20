@@ -15,7 +15,7 @@ defmodule RestAuth.ControllerTest do
       params = %{"password" => "123"}
       resp = Controller.login(conn, params)
 
-      assert %{"error" => _} = json_response(resp, 403)
+      assert %{"error" => _} = json_response(resp, 401)
       assert resp.halted
     end
 
@@ -23,7 +23,7 @@ defmodule RestAuth.ControllerTest do
       params = %{"username" => "123"}
       resp = Controller.login(conn, params)
 
-      assert %{"error" => _} = json_response(resp, 403)
+      assert %{"error" => _} = json_response(resp, 401)
       assert resp.halted
     end
 
@@ -44,7 +44,7 @@ defmodule RestAuth.ControllerTest do
       params = %{"username" => "foobar", "password" => "barfoo"}
       resp = Controller.login(conn, params)
 
-      assert %{"error" => "test error"} = json_response(resp, 403)
+      assert %{"error" => "test error"} = json_response(resp, 401)
       assert resp.halted
     end
 

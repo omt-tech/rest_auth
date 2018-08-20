@@ -2,8 +2,10 @@ defmodule RestAuth.Controller do
   @moduledoc """
   Generic controller handling login and logout.
   """
-
   require Logger
+
+  alias RestAuth.ErrorHandler
+
   import Phoenix.Controller, only: [json: 2]
   import Plug.Conn, only: [put_status: 2, halt: 1, put_resp_cookie: 4]
 
@@ -47,18 +49,19 @@ defmodule RestAuth.Controller do
         |> json(%{"data" => authority})
 
       {:error, reason} ->
-        conn
-        |> put_status(403)
-        |> json(%{"error" => reason})
-        |> halt
+        error_handler = ErrorHandler.fetch!(conn)
+
+        error_handler.cannot_authenticate(conn, reason, false)
+        |> halt() # Ensure halted
     end
   end
 
   def login(conn, _params) do
-    conn
-    |> put_status(403)
-    |> json(%{"error" => "Username and/or password missing"})
-    |> halt
+    reason = "Username and/or password missing"
+    error_handler = ErrorHandler.fetch!(conn)
+
+    error_handler.cannot_authenticate(conn, reason, false)
+    |> halt() # Ensure halted
   end
 
   @doc """
