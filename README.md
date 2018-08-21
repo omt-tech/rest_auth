@@ -10,7 +10,7 @@ The library is available on Hex.
 
 ```elixir
 defp deps do
-  [{:rest_auth, "~> 1.0"}]
+  [{:rest_auth, "~> 2.0"}]
 end
 ```
 
@@ -61,6 +61,10 @@ remain to be done:
   * Generators that make skeleton handler modules
   * Generators for token and user schemas for Ecto
   * Periodic reading from the database to flush the token cache for multi node deploys where the nodes are not connected
+
+## Upgrading from 1.x.x to 2.x.x
+
+The only breaking change between versions 1 and 2 are that `RestAuth.Controller.login/2` errors return `401` by default instead of `403`.
 
 ## License
 
